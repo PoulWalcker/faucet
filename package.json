@@ -6,7 +6,11 @@
     "chai": "^4.3.4",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.5.2",
-    "hardhat": "^2.7.0"
+    "hardhat": "^2.7.0",
+    "ts-node": "^10.7.0"
+  },
+  "scripts": {
+    "deploy:mumbai": "hardhat run --network mumbai ./scripts/deploy-script.js"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0",

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -13,10 +14,10 @@ contract GTONMemorableNFT is ERC721, Ownable {
   mapping (uint256 => string) private _tokenURIs;
   
   constructor() ERC721("GTON Memorable NFT", "GTONMEM") {}
+
   function _setTokenURI(uint256 tokenId, string memory _tokenURI)
     internal
-    virtual
-  {
+    virtual {
     _tokenURIs[tokenId] = _tokenURI;
   }
 
@@ -25,8 +26,7 @@ contract GTONMemorableNFT is ERC721, Ownable {
     view
     virtual
     override
-    returns (string memory)
-  {
+    returns (string memory) {
     require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
     string memory _tokenURI = _tokenURIs[tokenId];
     return _tokenURI;
@@ -34,11 +34,20 @@ contract GTONMemorableNFT is ERC721, Ownable {
 
   function mint(address recipient)
     public
-    returns (uint256)
-  {
+    onlyOwner
+    returns (uint256) {
     _tokenIds.increment();
     uint256 newItemId = _tokenIds.current();
     _mint(recipient, newItemId);
+    string memory uri = 
+      string(
+          abi.encodePacked(
+              'https://nft.gton.capital/memorable/metadata/',
+              Strings.toString(newItemId),
+              '.json'
+          )
+      );
+    
     _setTokenURI(newItemId, uri);
     return newItemId;
   }
