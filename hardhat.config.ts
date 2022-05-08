@@ -13,6 +13,11 @@ const { PRIVATE_KEY, ETHERSCAN, POLYGONSCAN, FTMSCAN } = process.env;
   networks: {
     hardhat: {
     },
+    ropsten: {
+      networkId: 80001,
+      url: "https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", //Add Infura Ropsten endpoint
+      accounts: [PRIVATE_KEY],
+    },
     matic: {
       url: "https://polygon-rpc.com/",
       accounts: [PRIVATE_KEY],

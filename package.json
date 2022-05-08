@@ -12,6 +12,8 @@
     "dotenv": "^16.0.0"
   },
   "scripts": {
+    "deploy:ropsten": "hardhat run --network ropsten ./scripts/deploy-script.js",
+    "mint:ropsten": "hardhat run --network ropsten ./scripts/mint-script.js",
     "deploy:mumbai": "hardhat run --network mumbai ./scripts/deploy-script.js",
     "mint:mumbai": "hardhat run --network mumbai ./scripts/mint-script.js",
     "deploy:ftm": "hardhat run --network ftm ./scripts/deploy-script.js",
