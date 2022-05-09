@@ -13,6 +13,10 @@ const { PRIVATE_KEY, ETHERSCAN, POLYGONSCAN, FTMSCAN } = process.env;
   networks: {
     hardhat: {
     },
+    rinkeby: {
+      url: "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+      accounts: [PRIVATE_KEY],
+    },
     ropsten: {
       networkId: 80001,
       url: "https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", //Add Infura Ropsten endpoint
