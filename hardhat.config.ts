@@ -1,6 +1,8 @@
-require("@nomiclabs/hardhat-waffle");
+import '@typechain/hardhat'
+import '@nomiclabs/hardhat-ethers'
 require("@nomiclabs/hardhat-etherscan");
 require('dotenv').config();
+import "hardhat-gas-reporter"
 
 import { resolve } from "path";
 import { config as dotenvConfig } from "dotenv";
@@ -9,18 +11,25 @@ dotenvConfig({ path: resolve(__dirname, "./.env") });
 const { PRIVATE_KEY, ETHERSCAN, POLYGONSCAN, FTMSCAN } = process.env;
 
  module.exports = {
-  defaultNetwork: "matic",
+  defaultNetwork: "hardhat",
   networks: {
     hardhat: {
+    },
+    mainnet: {
+      url: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+      accounts: [PRIVATE_KEY],
+      gasPrice: 26 * 1e9,
+      chainId: 1,
     },
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       accounts: [PRIVATE_KEY],
     },
     ropsten: {
-      networkId: 80001,
-      url: "https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", //Add Infura Ropsten endpoint
+      url: "https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       accounts: [PRIVATE_KEY],
+      gasPrice: 244 * 1e9,
+      gasMultiplier: 1,
     },
     matic: {
       url: "https://polygon-rpc.com/",
@@ -61,7 +70,7 @@ const { PRIVATE_KEY, ETHERSCAN, POLYGONSCAN, FTMSCAN } = process.env;
     }
   },
   solidity: {
-    version: "0.8.13",
+    version: "0.8.14",
     settings: {
       optimizer: {
         enabled: true,
