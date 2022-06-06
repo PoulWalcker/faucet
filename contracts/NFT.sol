@@ -1,54 +1,28 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import { InitializableOwnable } from "./InitializableOwnable.sol";
+import { ERC721A } from "erc721a/contracts/ERC721A.sol";
 
-contract GTONMemorableNFT is ERC721, Ownable {
-
-  using Counters for Counters.Counter;
-  using Strings for uint256;
-  Counters.Counter private _tokenIds;
+contract GTONMemorableNFT is ERC721A, InitializableOwnable {
 
   mapping (uint256 => string) private _tokenURIs;
   
-  constructor() ERC721("GTON Memorable NFT", "GTONMEM") {}
-
-  function _setTokenURI(uint256 tokenId, string memory _tokenURI)
-    internal
-    virtual {
-    _tokenURIs[tokenId] = _tokenURI;
+  constructor() ERC721A("GTON Memorable NFT", "GTONMEM") {
+    initOwner(msg.sender);
   }
 
-  function tokenURI(uint256 tokenId) 
-    public
-    view
-    virtual
-    override
-    returns (string memory) {
-    require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-    string memory _tokenURI = _tokenURIs[tokenId];
-    return _tokenURI;
-  }
+  function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+      if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
 
-  function mint(address recipient)
-    public
-    onlyOwner
-    returns (uint256) {
-    _tokenIds.increment();
-    uint256 newItemId = _tokenIds.current();
-    _mint(recipient, newItemId);
-    string memory uri = 
-      string(
+      return string(
           abi.encodePacked(
-              'https://nft.gton.capital/memorable/metadata/',
-              Strings.toString(newItemId),
-              '.json'
+            'https://nft.gton.capital/memorable/metadata/1.json'
           )
       );
-    
-    _setTokenURI(newItemId, uri);
-    return newItemId;
+  }
+
+  function mint(address to, uint256 quantity) external onlyAdminOrOwner {
+    _mint(to, quantity);
   }
 }
