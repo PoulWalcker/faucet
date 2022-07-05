@@ -1,6 +1,6 @@
-# Memorable GTON NFT
+# Faucet
 
-This is a contract for memorable GTON Capital NFTs which are distributed as raffle prizes or for special achievements, which will be used throughout our ecosystem to provide some benefits for the holders
+This is a Faucet contract for testnet
 
 ```shell
 npx hardhat accounts
