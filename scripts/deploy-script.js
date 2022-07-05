@@ -1,17 +1,21 @@
 async function main() {
-  const FAUCET = await hre.ethers.getContractFactory("Faucet");
-  const faucet = await FAUCET.deploy();
+
+  let tokenAddress = "0xbc10a04b76a5cd6bf2908e1237fb2d557482cf48"
+
+  const FaucetFactory = await hre.ethers.getContractFactory("Faucet");
+  const faucet = await FaucetFactory.deploy(
+    tokenAddress
+  );
   await faucet.deployed();
   console.log("Faucet deployed to: ", faucet.address);
 
   await delay(20000);
-  await verify(faucet.address);
-}
-
-async function verify(address) {
   await hre.run("verify:verify", {
-    address: address,
+    address: faucet.address,
     network: hre.network,
+    constructorArguments: [
+      tokenAddress
+  ]
   });
 }
 
