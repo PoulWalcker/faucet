@@ -1,45 +1,50 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >= 0.8.14;
+pragma solidity >= 0.8.15;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { InitializableOwnable } from "./InitializableOwnable.sol";
+
+interface IERC20 {
+    function transfer(address to, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+    function decimals() external view returns (uint8);
+}
 
 contract Faucet is InitializableOwnable  {
      
     mapping(address => uint) public lastTimestampList;
     uint public interval = 86400;
-    ERC20 token;
+    IERC20 token;
 
-    constructor( ) {
+    constructor(address _tokenAddr) {
         initOwner(msg.sender);
+        token = IERC20(_tokenAddr);
     }
 
     // Sends the amount of token to the caller.
     function send() external {
-        uint amount = 200 * token.decimals();
+        uint amount = 200 * (10 ** token.decimals());
         
-        require(token.balanceOf(address(this)) > amount,"FaucetError: Empty");
+        require(token.balanceOf(address(this)) > amount, "FaucetError: Empty");
         require(block.timestamp - lastTimestampList[msg.sender] > interval, "FaucetError: Try again later");
     
         lastTimestampList[msg.sender] = block.timestamp;
         
-        token.transfer(msg.sender, amount);
+        require(token.transfer(msg.sender, amount));
     }  
 
     // Updates the underlying token address
     function setTokenAddress(address _tokenAddr) external onlyOwner {
-        token = ERC20(_tokenAddr);
+        token = IERC20(_tokenAddr);
     } 
 
      // Updates the interval
-    function setFaucetInterval(uint256 _amount) external onlyOwner {
-        interval = _amount;
+    function setFaucetInterval(uint256 _interval) external onlyOwner {
+        interval = _interval;
     }  
 
     // Allows the owner to withdraw tokens from the contract.
-    function withdrawTokens(address _receiver, uint256 _amount) external onlyOwner {
-        require(token.balanceOf(address(this)) >= _amount,"FaucetError: Insufficient funds");
-        token.transfer(_receiver,_amount);
-    }    
+    function withdrawToken(IERC20 tokenToWithdraw, address to, uint amount) public onlyOwner {
+        require(tokenToWithdraw.transfer(to, amount));
+    }
 }
