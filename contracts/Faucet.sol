@@ -32,9 +32,9 @@ contract Faucet is InitializableOwnable  {
     }  
 
     // Check withdraw status for caller.
-    function canIWithdraw(address _user) public view returns(bool) {
+    function canIWithdraw(address _user) external view returns(bool) {
         uint timeStamp = block.timestamp;
-        return timeStamp - lastTimestampList[_user] > interval ? true : false;
+        return timeStamp - lastTimestampList[_user] > interval;
     }
 
      // Updates the interval
@@ -43,7 +43,7 @@ contract Faucet is InitializableOwnable  {
     }  
 
     // Allows the owner to withdraw tokens from the contract.
-    function withdrawToken(IERC20 tokenToWithdraw, address to, uint amount) public onlyOwner {
+    function withdrawToken(IERC20 tokenToWithdraw, address to, uint amount) external onlyOwner {
         require(tokenToWithdraw.transfer(to, amount));
     }
 }
