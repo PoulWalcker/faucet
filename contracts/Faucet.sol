@@ -31,6 +31,11 @@ contract Faucet is InitializableOwnable  {
         require(_token.transfer(msg.sender, amount));
     }  
 
+    // Check withdraw status for caller.
+    function canIWithdraw(address _user) public view returns(bool) {
+        uint timeStamp = block.timestamp;
+        return timeStamp - lastTimestampList[_user] > interval ? true : false;
+    }
 
      // Updates the interval
     function setFaucetInterval(uint256 _interval) external onlyOwner {

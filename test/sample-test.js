@@ -8,7 +8,8 @@ describe("NFT", function () {
   let FaucetFactory;
 
   let faucet;
-  let token;
+  let token1;
+  let token2;
   let tokenDecimals = 6;
 
   const [wallet, denice] = waffle.provider.getWallets();
@@ -23,41 +24,67 @@ describe("NFT", function () {
     ERC20Factory = await ethers.getContractFactory("MockERC20");
     FaucetFactory = await ethers.getContractFactory("Faucet");
 
-    token = await ERC20Factory.deploy("USDC", "USDC", tokenDecimals);
-    faucet = await FaucetFactory.deploy(token.address);
+    token1 = await ERC20Factory.deploy("USDC", "USDC", tokenDecimals);
+    token2 = await ERC20Factory.deploy("USDT", "USDT", tokenDecimals);
+
+    faucet = await FaucetFactory.deploy();
 
     console.log("Deployer address: " + wallet.address);
     console.log("Faucet address: " + faucet.address);
-    console.log("Token address: " + token.address);
+    console.log("Token address: " + token1.address);
 
-    console.log(await token.balanceOf(faucet.address));
+    console.log(await token1.balanceOf(faucet.address));
   }
 
   it("Withdraw fails if amount is more than limit", async () => {
     const owner = "0x9Bde0836d9F7386446a455684571e7694F9d909C";
 
-    console.log(await token.balanceOf(faucet.address));
+    console.log(await token1.balanceOf(faucet.address));
     await expect(
-      faucet.connect(wallet).withdrawToken(token.address, owner, 300)
+      faucet.connect(wallet).withdrawToken(token1.address, owner, 300)
     ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
   });
 
   it("Withdwaw tokens fail if balance lower than limit", async () => {
-    console.log(await token.balanceOf(faucet.address));
-    await expect(faucet.connect(wallet).send()).to.be.revertedWith(
-      "FaucetError: Empty"
-    );
+    console.log(await token1.balanceOf(faucet.address));
+    await expect(
+      faucet.connect(wallet).send(token2.address)
+    ).to.be.revertedWith("FaucetError: Empty");
+    await expect(
+      faucet.connect(wallet).send(token1.address)
+    ).to.be.revertedWith("FaucetError: Empty");
   });
 
   it("Withdraw works fine if enough tokens are on faucet", async () => {
     const owner = "0x9Bde0836d9F7386446a455684571e7694F9d909C";
 
-    await token.mint(
+    await token1.mint(
       faucet.address,
       Big(299).mul(Math.pow(10, tokenDecimals)).toFixed()
     );
 
-    console.log(await token.balanceOf(faucet.address));
-    await faucet.connect(wallet).withdrawToken(token.address, owner, 300);
+    await token2.mint(
+      faucet.address,
+      Big(299).mul(Math.pow(10, tokenDecimals)).toFixed()
+    );
+    console.log(await token1.balanceOf(faucet.address));
+    await faucet.connect(wallet).withdrawToken(token1.address, owner, 300);
+    await faucet.connect(wallet).withdrawToken(token2.address, owner, 300);
+  });
+
+  it("Withdraw fails if interval less then difference between current time stamp and callse timestamp", async () => {
+    await token1.mint(
+      faucet.address,
+      Big(600).mul(Math.pow(10, tokenDecimals)).toFixed()
+    );
+    console.log(await token1.balanceOf(faucet.address));
+
+    await faucet.connect(wallet).send(token1.address);
+
+    console.log(await token1.balanceOf(faucet.address));
+
+    expect(await faucet.connect(wallet).canIWithdraw(wallet.address)).to.equal(
+      false
+    );
   });
 });
