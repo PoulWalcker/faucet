@@ -55,7 +55,7 @@ describe("NFT", function () {
     ).to.be.revertedWith("FaucetError: Empty");
   });
 
-  it("Withdraw works fine if enough tokens are on faucet", async () => {
+  it("Withdraw works fine for owner if enough tokens are on faucet", async () => {
     const owner = "0x9Bde0836d9F7386446a455684571e7694F9d909C";
 
     await token1.mint(
@@ -72,19 +72,34 @@ describe("NFT", function () {
     await faucet.connect(wallet).withdrawToken(token2.address, owner, 300);
   });
 
-  it("Withdraw fails if interval less then difference between current time stamp and callse timestamp", async () => {
+  it("Withdraw fails if interval less then difference between current time stamp and call`s timestamp", async () => {
     await token1.mint(
       faucet.address,
       Big(600).mul(Math.pow(10, tokenDecimals)).toFixed()
     );
+
     console.log(await token1.balanceOf(faucet.address));
 
     await faucet.connect(wallet).send(token1.address);
 
     console.log(await token1.balanceOf(faucet.address));
 
-    expect(await faucet.connect(wallet).canIWithdraw(wallet.address)).to.equal(
-      false
+    expect(
+      await faucet.connect(wallet).canIWithdraw(wallet.address, token1.address)
+    ).to.equal(false);
+  });
+
+  it("Withdraw works fine for caller if enough tokens are on faucet", async () => {
+    console.log(
+      "Timestamp for token1 is",
+      await faucet.lastTimestampList(wallet.address, token1.address)
     );
+
+    console.log(
+      "Timestamp for token2 is",
+      await faucet.lastTimestampList(wallet.address, token2.address)
+    );
+
+    await faucet.connect(wallet).send(token2.address);
   });
 });

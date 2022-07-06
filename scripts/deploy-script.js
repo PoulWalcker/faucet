@@ -10,7 +10,6 @@ async function main() {
   await hre.run("verify:verify", {
     address: faucet.address,
     network: hre.network,
-    constructorArguments: [tokenAddress],
   });
 }
 

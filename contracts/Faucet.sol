@@ -12,7 +12,7 @@ interface IERC20 {
 
 contract Faucet is InitializableOwnable  {
      
-    mapping(address => uint) public lastTimestampList;
+    mapping(address => mapping(IERC20  => uint)) public lastTimestampList;
     uint public interval = 86400;
 
     constructor() {
@@ -24,17 +24,17 @@ contract Faucet is InitializableOwnable  {
         uint amount = 200 * (10 ** _token.decimals());
         
         require(_token.balanceOf(address(this)) > amount, "FaucetError: Empty");
-        require(block.timestamp - lastTimestampList[msg.sender] > interval, "FaucetError: Try again later");
+        require(block.timestamp - lastTimestampList[msg.sender][_token] > interval, "FaucetError: Try again later");
     
-        lastTimestampList[msg.sender] = block.timestamp;
+        lastTimestampList[msg.sender][_token] = block.timestamp;
         
         require(_token.transfer(msg.sender, amount));
     }  
 
     // Check withdraw status for caller.
-    function canIWithdraw(address _user) external view returns(bool) {
+    function canIWithdraw(address _user, IERC20 _token) external view returns(bool) {
         uint timeStamp = block.timestamp;
-        return timeStamp - lastTimestampList[_user] > interval;
+        return timeStamp - lastTimestampList[_user][_token] > interval;
     }
 
      // Updates the interval
