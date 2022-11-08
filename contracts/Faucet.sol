@@ -15,19 +15,20 @@ contract Faucet is InitializableOwnable  {
     mapping(address => uint) public lastTimestampList;
     uint public paymentAmount = 50;
     uint public interval = 86400;
-    IERC20 token;
+    address public tokenAddress;
 
     constructor(
-        address _tokenAddr,
+        address _tokenAddress,
         uint _paymentAmount
     ) {
         initOwner(msg.sender);
-        token = IERC20(_tokenAddr);
+        tokenAddress = _tokenAddress;
         paymentAmount = _paymentAmount;
     }
 
     // Sends the amount of token to the caller.
     function getTokens() external {
+        IERC20 token = IERC20(tokenAddress);
         uint amount = paymentAmount * (10 ** token.decimals());
         
         require(token.balanceOf(address(this)) > amount, "FaucetError: Empty");
@@ -39,8 +40,8 @@ contract Faucet is InitializableOwnable  {
     }  
 
     // Updates the underlying token address
-    function setTokenAddress(address _tokenAddr) external onlyOwner {
-        token = IERC20(_tokenAddr);
+    function setTokenAddress(address _tokenAddress) external onlyOwner {
+        tokenAddress = _tokenAddress;
     } 
 
     // Updates the interval
