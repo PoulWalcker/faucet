@@ -1,10 +1,12 @@
 async function main() {
 
-  let tokenAddress = "0xbc10a04b76a5cd6bf2908e1237fb2d557482cf48"
+  let gcdGoerli = "0x1EF834d6D3694a932A2082678EDd543E3Eb3412b"
+  let tokenAddress = gcdGoerli
 
   const FaucetFactory = await hre.ethers.getContractFactory("Faucet");
   const faucet = await FaucetFactory.deploy(
-    tokenAddress
+    tokenAddress,
+    20
   );
   await faucet.deployed();
   console.log("Faucet deployed to: ", faucet.address);

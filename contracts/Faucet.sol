@@ -13,17 +13,22 @@ interface IERC20 {
 contract Faucet is InitializableOwnable  {
      
     mapping(address => uint) public lastTimestampList;
+    uint public paymentAmount = 50;
     uint public interval = 86400;
     IERC20 token;
 
-    constructor(address _tokenAddr) {
+    constructor(
+        address _tokenAddr,
+        uint _paymentAmount
+    ) {
         initOwner(msg.sender);
         token = IERC20(_tokenAddr);
+        paymentAmount = _paymentAmount;
     }
 
     // Sends the amount of token to the caller.
-    function send() external {
-        uint amount = 200 * (10 ** token.decimals());
+    function getTokens() external {
+        uint amount = paymentAmount * (10 ** token.decimals());
         
         require(token.balanceOf(address(this)) > amount, "FaucetError: Empty");
         require(block.timestamp - lastTimestampList[msg.sender] > interval, "FaucetError: Try again later");
@@ -38,10 +43,15 @@ contract Faucet is InitializableOwnable  {
         token = IERC20(_tokenAddr);
     } 
 
-     // Updates the interval
+    // Updates the interval
     function setFaucetInterval(uint256 _interval) external onlyOwner {
         interval = _interval;
-    }  
+    }
+
+    // Updates the amount paid
+    function setAmount(uint256 _amount) external onlyOwner {
+        paymentAmount = _amount;
+    }
 
     // Allows the owner to withdraw tokens from the contract.
     function withdrawToken(IERC20 tokenToWithdraw, address to, uint amount) public onlyOwner {

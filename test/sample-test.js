@@ -24,7 +24,7 @@ describe("NFT", function () {
     FaucetFactory = await ethers.getContractFactory("Faucet");
 
     token = await ERC20Factory.deploy("USDC", "USDC", tokenDecimals);
-    faucet = await FaucetFactory.deploy(token.address);
+    faucet = await FaucetFactory.deploy(token.address, 20);
 
     console.log("Deployer address: " + wallet.address);
     console.log("Faucet address: " + faucet.address);
@@ -44,7 +44,7 @@ describe("NFT", function () {
 
   it("Withdwaw tokens fail if balance lower than limit", async () => {
     console.log(await token.balanceOf(faucet.address));
-    await expect(faucet.connect(wallet).send()).to.be.revertedWith(
+    await expect(faucet.connect(wallet).getTokens()).to.be.revertedWith(
       "FaucetError: Empty"
     );
   });
@@ -59,5 +59,18 @@ describe("NFT", function () {
 
     console.log(await token.balanceOf(faucet.address));
     await faucet.connect(wallet).withdrawToken(token.address, owner, 300);
+  });
+
+  it("Pays the correct amount", async () => {
+    await token.mint(
+      faucet.address,
+      Big(299).mul(Math.pow(10, tokenDecimals)).toFixed()
+    );
+
+    console.log(await token.balanceOf(faucet.address));
+
+    const amount = await faucet.paymentAmount()
+    await faucet.connect(denice).getTokens();
+    expect(await token.balanceOf(denice.address)).to.be.eq(amount * (10 ** tokenDecimals))
   });
 });

@@ -22,15 +22,9 @@ const { PRIVATE_KEY, ETHERSCAN, POLYGONSCAN, FTMSCAN } = process.env;
       gasPrice: 26 * 1e9,
       chainId: 1,
     },
-    rinkeby: {
-      url: "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+    goerli: {
+      url: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       accounts: [PRIVATE_KEY],
-    },
-    ropsten: {
-      url: "https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
-      accounts: [PRIVATE_KEY],
-      gasPrice: 244 * 1e9,
-      gasMultiplier: 1,
     },
     matic: {
       url: "https://polygon-rpc.com/",
