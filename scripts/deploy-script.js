@@ -16,7 +16,8 @@ async function main() {
     address: faucet.address,
     network: hre.network,
     constructorArguments: [
-      tokenAddress
+      tokenAddress,
+      20
   ]
   });
 }
